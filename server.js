@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 require('dotenv').config(); // Load env vars
 
 const { MongoClient } = require('mongodb');
@@ -6,6 +7,7 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 const uri = process.env.MONGO_URI;
+app.use(cors());
 
 const client = new MongoClient(uri);
 
@@ -14,11 +16,9 @@ let collection;  // Will hold your flags collection
 async function connectDB() {
   try {
     await client.connect();
+    const db = client.db('flags-db');
+    collection = db.collection('flags');
     console.log('Connected to MongoDB Atlas');
-
-    const db = client.db('flags-db');       // Change if your DB name differs
-    collection = db.collection('flags');    // Your collection name
-
   } catch (err) {
     console.error('DB connection error:', err);
     process.exit(1);
@@ -26,8 +26,12 @@ async function connectDB() {
 }
 
 // Health check route
-app.get('/', (req, res) => {
-  res.send('Flag API is running!');
+app.get('/flag', async (req, res) => {
+  if (!collection) {
+    return res.status(500).json({ error: 'Database not connected' });
+  }
+  const flags = await collection.find().toArray();
+  res.json(flags);
 });
 
 // Get flag by orgId
