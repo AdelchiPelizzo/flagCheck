@@ -27,11 +27,15 @@ async function connectDB() {
 
 // Health check route
 app.get('/flag', async (req, res) => {
-  if (!collection) {
-    return res.status(500).json({ error: 'Database not connected' });
+  try{
+    if (!collection) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+    const flags = await collection.find().toArray();
+    res.json(flags);} catch (error)  {
+      console.error('Error fetching flags:', error);
+      res.status(500).json({ error: 'Internal server error' });
   }
-  const flags = await collection.find().toArray();
-  res.json(flags);
 });
 
 // Get flag by orgId
@@ -54,7 +58,8 @@ app.get('/flag/:orgId', async (req, res) => {
     console.error('Error fetching flag:', err);
     res.status(500).json({ status: 'error', message: err.message });
   }
-});
+}); // flagsData is your array or object with flag info
+
 
 // Connect DB, then start server
 connectDB().then(() => {
