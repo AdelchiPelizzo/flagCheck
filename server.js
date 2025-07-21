@@ -74,12 +74,24 @@ app.get('/flag/:orgId', async (req, res) => {
 
 app.put('/flag/:id', async (req, res) => {
   const id = req.params.id;
-  const { flagColor } = req.body;
+  const { flagColor, appName } = req.body; // ✅ get both values
 
   try {
+    const updateFields = {
+      timestamp: new Date()
+    };
+
+    if (flagColor !== undefined) {
+      updateFields.flag_color = flagColor;
+    }
+
+    if (appName !== undefined) {
+      updateFields.app_name = appName; // ✅ use your desired MongoDB field name
+    }
+
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { flag_color: flagColor, timestamp: new Date() } }
+      { $set: updateFields }
     );
 
     if (result.matchedCount === 0) {
@@ -92,6 +104,7 @@ app.put('/flag/:id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 // Connect DB, then start server
