@@ -74,7 +74,7 @@ app.get('/flag/:orgId', async (req, res) => {
 
 app.put('/flag/:id', async (req, res) => {
   const id = req.params.id;
-  const { flagColor, appName } = req.body; // ✅ get both values
+  const { flagColor, appName } = req.body;
 
   try {
     const updateFields = {
@@ -86,7 +86,7 @@ app.put('/flag/:id', async (req, res) => {
     }
 
     if (appName !== undefined) {
-      updateFields.app_name = appName; // ✅ use your desired MongoDB field name
+      updateFields.app_name = appName;
     }
 
     const result = await collection.updateOne(
@@ -98,7 +98,10 @@ app.put('/flag/:id', async (req, res) => {
       return res.status(404).json({ error: 'Flag not found' });
     }
 
-    res.json({ success: true, updated: result.modifiedCount });
+    // Fetch updated document
+    const updatedDoc = await collection.findOne({ _id: new ObjectId(id) });
+
+    res.json({ success: true, updated: result.modifiedCount, data: updatedDoc });
   } catch (error) {
     console.error('Error updating flag:', error);
     res.status(500).json({ error: 'Internal server error' });
