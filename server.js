@@ -39,7 +39,7 @@ app.get('/flag', async (req, res) => {
     const normalized = flags.map(doc => ({
       id: doc._id.toString(),           // convert ObjectId to string for LWC key
       orgId: doc.orgId || '',
-      appName: doc.appName || '',       // fallback empty string if missing
+      appName: doc.app_name || '',       // fallback empty string if missing
       flagColor: doc.flag_color || ''   // normalize snake_case to camelCase
     }));
 
