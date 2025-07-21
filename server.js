@@ -70,6 +70,27 @@ app.get('/flag/:orgId', async (req, res) => {
   }
 }); // flagsData is your array or object with flag info
 
+app.put('/flag/:id', async (req, res) => {
+  const { id } = req.params.id;
+  const { flagColor } = req.body;
+
+  try {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { flagColor, timestamp: new Date() } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Flag not found' });
+    }
+
+    res.json({ success: true, updated: result.modifiedCount });
+  } catch (error) {
+    console.error('Error updating flag:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 // Connect DB, then start server
 connectDB().then(() => {
