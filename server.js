@@ -79,7 +79,7 @@ app.put('/flag/:id', async (req, res) => {
   try {
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { flagColor, timestamp: new Date() } }
+      { $set: { flag_color: flagColor, timestamp: new Date() } }
     );
 
     if (result.matchedCount === 0) {
