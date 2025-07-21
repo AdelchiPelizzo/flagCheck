@@ -8,6 +8,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 const uri = process.env.MONGO_URI;
 app.use(cors());
+app.use(express.json());
+
 
 const client = new MongoClient(uri);
 
