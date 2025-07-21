@@ -27,14 +27,24 @@ async function connectDB() {
 
 // Health check route
 app.get('/flag', async (req, res) => {
-  try{
+  try {
     if (!collection) {
       return res.status(500).json({ error: 'Database not connected' });
     }
+
     const flags = await collection.find().toArray();
-    res.json(flags);} catch (error)  {
-      console.error('Error fetching flags:', error);
-      res.status(500).json({ error: 'Internal server error' });
+
+    const normalized = flags.map(doc => ({
+      id: doc._id.toString(),           // convert ObjectId to string for LWC key
+      orgId: doc.orgId || '',
+      appName: doc.appName || '',       // fallback empty string if missing
+      flagColor: doc.flag_color || ''   // normalize snake_case to camelCase
+    }));
+
+    res.json(normalized);
+  } catch (error) {
+    console.error('Error fetching flags:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
