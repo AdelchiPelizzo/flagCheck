@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config(); // Load env vars
 
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -71,7 +71,7 @@ app.get('/flag/:orgId', async (req, res) => {
 }); // flagsData is your array or object with flag info
 
 app.put('/flag/:id', async (req, res) => {
-  const { id } = req.params.id;
+  const id = req.params.id;
   const { flagColor } = req.body;
 
   try {
