@@ -108,6 +108,43 @@ app.put('/flag/:id', async (req, res) => {
   }
 });
 
+app.post('/flag', express.json(), async (req, res) => {
+  const { orgId, flagColor, appName } = req.body;
+
+  if (!orgId) {
+    return res.status(400).json({ error: 'Missing orgId' });
+  }
+
+  try {
+    const updateFields = {
+      timestamp: new Date()
+    };
+
+    if (flagColor !== undefined) {
+      updateFields.flag_color = flagColor;
+    }
+
+    if (appName !== undefined) {
+      updateFields.app_name = appName;
+    }
+
+    // Upsert based on orgId (insert if not found)
+    const result = await collection.updateOne(
+      { org_id: orgId },
+      { $set: updateFields, $setOnInsert: { org_id: orgId } },
+      { upsert: true }
+    );
+
+    const updatedDoc = await collection.findOne({ org_id: orgId });
+
+    res.json({ success: true, data: updatedDoc });
+  } catch (error) {
+    console.error('Error handling POST /flag:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 
 
 // Connect DB, then start server
