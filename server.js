@@ -130,7 +130,7 @@ app.post('/flag', express.json(), async (req, res) => {
 
     // Upsert based on orgId (insert if not found)
     const result = await collection.updateOne(
-      { org_id: orgId },
+      { orgId: orgId },
       { $set: updateFields, $setOnInsert: { org_id: orgId } },
       { upsert: true }
     );
