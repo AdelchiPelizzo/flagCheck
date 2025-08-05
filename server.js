@@ -40,7 +40,8 @@ app.get('/flag', async (req, res) => {
       id: doc._id.toString(),           // convert ObjectId to string for LWC key
       orgId: doc.orgId || '',
       appName: doc.app_name || '',       // fallback empty string if missing
-      flagColor: doc.flag_color || ''   // normalize snake_case to camelCase
+      flagColor: doc.flag_color || '',   // normalize snake_case to camelCase
+      notice: doc.notice || '',
     }));
 
     res.json(normalized);
@@ -74,7 +75,7 @@ app.get('/flag/:orgId', async (req, res) => {
 
 app.put('/flag/:id', async (req, res) => {
   const id = req.params.id;
-  const { flagColor, appName } = req.body;
+  const { flagColor, appName, notice } = req.body;
 
   try {
     const updateFields = {
@@ -87,6 +88,10 @@ app.put('/flag/:id', async (req, res) => {
 
     if (appName !== undefined) {
       updateFields.app_name = appName;
+    }
+
+    if (notice !== undefined) {
+      updateFields.notice = notice;
     }
 
     const result = await collection.updateOne(
