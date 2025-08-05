@@ -114,7 +114,7 @@ app.put('/flag/:id', async (req, res) => {
 });
 
 app.post('/flag', express.json(), async (req, res) => {
-  const { orgId, flagColor, appName } = req.body;
+  const { orgId, flagColor, appName, notice } = req.body;
 
   if (!orgId) {
     return res.status(400).json({ error: 'Missing orgId' });
@@ -131,6 +131,10 @@ app.post('/flag', express.json(), async (req, res) => {
 
     if (appName !== undefined) {
       updateFields.app_name = appName;
+    }    
+
+    if (notice !== undefined) {
+      updateFields.notice = notice;
     }
 
     // Upsert based on orgId (insert if not found)
