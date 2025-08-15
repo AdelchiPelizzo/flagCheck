@@ -121,26 +121,28 @@ app.post('/flag', express.json(), async (req, res) => {
   }
 
   try {
-    const updateFields = { timestamp: new Date() };
-    if (flagColor !== undefined) updateFields.flag_color = flagColor;
-    if (appName !== undefined) updateFields.app_name = appName;
-    if (notice !== undefined) updateFields.notice = notice;
+    // Build the new document
+    const newDoc = {
+      orgId,
+      timestamp: new Date()
+    };
 
-    const result = await collection.updateOne(
-      { orgId: orgId },                 // query
-      { $set: updateFields, $setOnInsert: { orgId: orgId } },
-      { upsert: true }
-    );
-    const updatedDoc = await collection.findOne({ orgId: orgId });
+    if (flagColor !== undefined) newDoc.flag_color = flagColor;
+    if (appName !== undefined) newDoc.app_name = appName;
+    if (notice !== undefined) newDoc.notice = notice;
 
-    res.json({ success: true, data: updatedDoc });
+    // Insert the new document
+    const result = await collection.insertOne(newDoc);
+
+    // Fetch the inserted document (with _id)
+    const insertedDoc = await collection.findOne({ _id: result.insertedId });
+
+    res.json({ success: true, data: insertedDoc });
   } catch (error) {
-    console.error('Error handling POST /flag:', error);
+    console.error('Error creating flag:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
 
 
 // Connect DB, then start server
