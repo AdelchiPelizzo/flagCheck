@@ -121,29 +121,16 @@ app.post('/flag', express.json(), async (req, res) => {
   }
 
   try {
-    const updateFields = {
-      timestamp: new Date()
-    };
+    const updateFields = { timestamp: new Date() };
+    if (flagColor !== undefined) updateFields.flag_color = flagColor;
+    if (appName !== undefined) updateFields.app_name = appName;
+    if (notice !== undefined) updateFields.notice = notice;
 
-    if (flagColor !== undefined) {
-      updateFields.flag_color = flagColor;
-    }
-
-    if (appName !== undefined) {
-      updateFields.app_name = appName;
-    }    
-
-    if (notice !== undefined) {
-      updateFields.notice = notice;
-    }
-
-    // Upsert based on orgId (insert if not found)
     const result = await collection.updateOne(
-      { orgId: orgId },
+      { orgId: orgId },                 // query
       { $set: updateFields, $setOnInsert: { orgId: orgId } },
       { upsert: true }
     );
-
     const updatedDoc = await collection.findOne({ orgId: orgId });
 
     res.json({ success: true, data: updatedDoc });
