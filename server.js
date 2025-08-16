@@ -66,7 +66,7 @@ app.get('/flag/:orgId', async (req, res) => {
       return res.status(404).json({ status: 'not found' });
     }
 
-    res.json({ status: 'ok', flag: flagDoc.flag_color, notice: flagDoc.notice });
+    res.json({ status: 'ok', flag: flagDoc.flag_color, notice: flagDoc.notice, appName: flagDoc.appName });
   } catch (err) {
     console.error('Error fetching flag:', err);
     res.status(500).json({ status: 'error', message: err.message });
